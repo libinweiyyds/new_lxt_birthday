@@ -1,0 +1,296 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Birthday palette — warm, soft, premium. */
+  --cream-50: #fdfaf3;
+  --cream-100: #faf3e8;
+  --cream-200: #f5ead8;
+  --peach-200: #fbd0b3;
+  --peach-300: #f5b896;
+  --blush-200: #f7c5b8;
+  --cherry-300: #e25b5b;
+  --cherry-400: #c44444;
+  --champagne-200: #e6cf94;
+  --champagne-300: #d2b46a;
+  --lavender-200: #d8c8e5;
+  --espresso-700: #3a2e2a;
+  --espresso-800: #2a1f1c;
+  --espresso-900: #1a1311;
+
+  --tracking-cinematic: 0.5em;
+  --tracking-soft: 0.22em;
+  --tracking-headline: -0.02em;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--cream-100);
+  color: var(--espresso-800);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  touch-action: none;
+}
+
+/* Allow internal scenes to scroll if they need to (none currently do, but safe). */
+#root > * { touch-action: auto; }
+
+body {
+  /* Default to handwritten stack so any text without an explicit
+     font class still reads as handwriting. Caveat covers Latin,
+     Ma Shan Zheng covers Chinese, Long Cang is the organic fallback. */
+  font-family: 'Caveat', 'Ma Shan Zheng', 'Long Cang', 'Kalam', cursive;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    /* Linen weave — two overlapping faint line grids */
+    repeating-linear-gradient(
+      0deg,
+      rgba(196, 168, 120, 0.025) 0px,
+      rgba(196, 168, 120, 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(196, 168, 120, 0.02) 0px,
+      rgba(196, 168, 120, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(251, 208, 179, 0.5) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 80% 90%, rgba(216, 200, 229, 0.4) 0%, transparent 60%),
+    linear-gradient(180deg, var(--cream-50) 0%, var(--cream-100) 100%);
+  background-attachment: fixed;
+}
+
+::-webkit-scrollbar { width: 0; background: transparent; }
+::selection { background: rgba(196, 68, 68, 0.18); color: var(--espresso-900); }
+
+/* ─── Layered atmosphere (warm) ──────────────────────────────── */
+
+/* 1. Paper grain — very light, no harsh noise. */
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.32 0 0 0 0 0.28 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain-drift 1.4s steps(6) infinite;
+}
+@keyframes grain-drift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-2%, -1%); }
+  40%  { transform: translate(2%, 2%); }
+  60%  { transform: translate(-1%, 1%); }
+  80%  { transform: translate(1%, -1%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 2. Warm light leak — a peach glow in upper-left, a lavender in lower-right. */
+.light-leak {
+  position: fixed;
+  pointer-events: none;
+  z-index: 75;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 45% 40% at 12% 8%, rgba(251, 208, 179, 0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 38% 35% at 88% 92%, rgba(216, 200, 229, 0.45) 0%, transparent 60%);
+  mix-blend-mode: multiply;
+  animation: leak-drift 28s ease-in-out infinite alternate;
+}
+@keyframes leak-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(2%, -1.5%, 0) scale(1.05); }
+}
+
+/* 3. Frame edge — gentle cream deepening at top and bottom. */
+.frame-edge {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 78;
+  background: linear-gradient(180deg, rgba(250, 243, 232, 0.6) 0%, transparent 12%, transparent 88%, rgba(245, 234, 216, 0.7) 100%);
+}
+
+/* 4. Subtle scanline (paper fibers). */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  opacity: 0.02;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(58, 46, 42, 0.5) 0px,
+    rgba(58, 46, 42, 0.5) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* 5. Vignette — soft cream inward darkening (NOT black). */
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 80;
+  background:
+    radial-gradient(ellipse 90% 80% at 50% 50%, transparent 60%, rgba(232, 220, 192, 0.3) 100%);
+}
+
+/* 6. Tracing paper — a translucent warm wash over everything, gives the
+      whole app the feel of looking at a physical table through thin paper. */
+.tracing-paper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 72;
+  background:
+    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(245, 234, 216, 0.25) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* 7. Paper-fiber — organic fibrous texture (subtler than scanlines). */
+.paper-fiber {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 71;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.4' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
+  background-size: 200px 200px;
+}
+
+/* ─── Type utilities ──────────────────────────────────────────── */
+.tracking-cinematic { letter-spacing: var(--tracking-cinematic); }
+.tracking-soft { letter-spacing: var(--tracking-soft); }
+.tracking-headline { letter-spacing: var(--tracking-headline); }
+
+/* Cursor glow — warm peach. */
+.cursor-glow {
+  position: fixed;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(251, 208, 179, 0.25) 0%, transparent 65%);
+  transform: translate(-50%, -50%);
+  z-index: 65;
+  transition: opacity 0.6s ease;
+  mix-blend-mode: multiply;
+}
+
+/* App shell entrance — gentle cream fade-in. */
+.app-shell {
+  animation: shell-in 2.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  height: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+}
+@keyframes shell-in {
+  from { opacity: 0; filter: blur(8px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.85; }
+}
+.animate-slow-pulse { animation: slow-pulse 6s ease-in-out infinite; }
+
+/* Per-character reveal driven by --i custom property. */
+.char-mask [style*="--i"] {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  filter: blur(6px);
+  animation: char-in 3.6s cubic-bezier(0.83, 0, 0.17, 1) forwards;
+  animation-delay: calc(var(--i) * 0.05s);
+}
+@keyframes char-in {
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+
+/* Light sweep — warm champagne wash. */
+.light-sweep {
+  position: fixed;
+  inset: -20% -20%;
+  z-index: 99;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 40%,
+    rgba(255, 240, 220, 0.4) 50%,
+    transparent 60%
+  );
+  mix-blend-mode: screen;
+}
+
+/* Hand-drawn underline — used in scrapbook captions. */
+.hand-underline {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'><path d='M0 4 Q 25 0 50 4 T 100 4' stroke='%23c44444' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 0.4em;
+  padding-bottom: 0.15em;
+}
+
+/* Washi tape — diagonal pastel strips. */
+.tape {
+  position: absolute;
+  width: 80px;
+  height: 22px;
+  background: rgba(247, 197, 184, 0.55);
+  border-left: 1px dashed rgba(255, 255, 255, 0.4);
+  border-right: 1px dashed rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(58, 46, 42, 0.08);
+  z-index: 20;
+}
+.tape-tl { top: -10px; left: -10px; transform: rotate(-22deg); }
+.tape-tr { top: -10px; right: -10px; transform: rotate(18deg); }
+.tape-bl { bottom: -10px; left: -10px; transform: rotate(15deg); }
+.tape-br { bottom: -10px; right: -10px; transform: rotate(-15deg); }
+
+/* Photo card — soft cream paper card. */
+.photo-card {
+  background: #fffbf3;
+  box-shadow:
+    0 1px 1px rgba(58, 46, 42, 0.05),
+    0 4px 16px rgba(58, 46, 42, 0.08),
+    0 24px 60px -20px rgba(58, 46, 42, 0.12);
+}
+
+/* Reduced motion — hard-stop all animation. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain-overlay, .scanlines, .light-leak, .paper-fiber, .tracing-paper { opacity: 0; }
+}
+
+/* Mobile: drop the cursor glow, tighten type. */
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  .cursor-glow { display: none; }
+}
