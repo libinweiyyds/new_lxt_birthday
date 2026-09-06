@@ -316,7 +316,7 @@ export const birthday = {
 
   /* ── MUSIC ──────────────────────────────────────────────────── */
   music: {
-    src: '../../music/特别的人-方大同.aac',
+    src: 'https://lbw-music.oss-cn-beijing.aliyuncs.com/%E7%89%B9%E5%88%AB%E7%9A%84%E4%BA%BA-%E6%96%B9%E5%A4%A7%E5%90%8C.aac',
     title: '特别的人',
   },
 
